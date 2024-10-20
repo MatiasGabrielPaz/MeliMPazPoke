@@ -7,8 +7,20 @@ Posibles excepciones: myauth (string) --> Mensaje de error por validacion de usu
                       pokemon_type --> Mensaje de error por nombre de pokemon ingresado incorrecto
 
 
+
+
 @app.route('/pokemon/<string:name>', methods=['GET'])                           #Endpoint - GET - Devuelve tipo de pokemon segun su nombre
-def pokemon_type(name):                                                             #
+def pokemon_type(name):   
+
+    """Devuelve el tipo de un Pokémon según su nombre.
+
+    Args:
+        name (str): Nombre del Pokémon.
+
+    Returns:
+        json: Tipos de Pokémon en formato JSON o mensaje de error.
+    """
+                                                              #
     myauth = validate_authentication()              #Valido Autenticacion
     if myauth is not None:
         return myauth                             #Return Error Auth
@@ -23,6 +35,16 @@ Posibles excepciones: myauth (string) --> Mensaje de error por validacion de usu
 
 @app.route('/pokemon/random/<string:type>', methods=['GET'])                    #Endpoint - GET - Devuelve el nombre de un pokemon random segun su tipo
 def random_pokemon(type):
+
+    """Devuelve un nombre de Pokémon aleatorio según su tipo.
+
+    Args:
+        type (str): Tipo del Pokémon.
+
+    Returns:
+        json: Nombre del Pokémon aleatorio o mensaje de error.
+    """
+
     myauth = validate_authentication()                                              #Valido Autenticacion
     if myauth is not None:
         return myauth                                                              #Return Error Auth
@@ -39,6 +61,16 @@ Posibles excepciones: myauth (string) --> Mensaje de error por validacion de usu
 
 @app.route('/pokemon/longest/<string:type>', methods=['GET'])                   #Endpoint - GET - Devuelve el nombre mas largo de un pokemon segun su tipo
 def longest_name_pokemon(type):
+
+    """Devuelve el nombre más largo de un Pokémon según su tipo.
+
+    Args:
+        type (str): Tipo del Pokémon.
+
+    Returns:
+        json: Nombre del Pokémon más largo o mensaje de error.
+    """
+
     myauth = validate_authentication()                                              #Valido Autenticacion
     if myauth is not None:
         return myauth                                                              #Return Error Auth
@@ -53,6 +85,17 @@ Posibles excepciones: myauth (string) --> Mensaje de error por validacion de usu
 
 @app.route('/pokemon/random/strong/<string:city>', methods=['GET'])             #Endpoint - GET - Devuelve el nombre de un pokemon random segun la ciudad, temperatura y que tenga las letras iam dentro de su nombre
 def temperature(city):
+
+    """Devuelve un Pokémon aleatorio que contenga 'iam' en su nombre
+    según la ciudad y la temperatura.
+
+    Args:
+        city (str): Ciudad para determinar el clima.
+
+    Returns:
+        json: Nombre del Pokémon aleatorio o mensaje de error.
+    """
+
     myauth = validate_authentication()                                              #Valido Autenticacion
     if myauth is not None:
         return myauth                                                              #Return Error Auth
@@ -70,6 +113,16 @@ Posibles excepciones: pokemon_type --> Mensaje de error por nombre de pokemon in
 
 @app.route('/pokemon/pokedex/<string:name>', methods=['GET'])                   #Endpoint - GET - Devuelve tipo de pokemon segun su nombre
 def pokemon_pokedex(name):
+
+    """Muestra detalles del Pokémon en una página HTML.
+
+    Args:
+        name (str): Nombre del Pokémon.
+
+    Returns:
+        HTML: Página renderizada con información del Pokémon.
+    """
+
     pokemon_type =  ', '.join(get_pokemon_type(name))
     pokemon_id = str(get_pokemon_id_by_name(name))
     return render_template('index.html', img_id=pokemon_id, text1=name, text2=pokemon_type)
@@ -101,6 +154,16 @@ Valores de resultado: tipos (list) --> Listas de tipos del pokemon
 Posibles excepciones: get_error_message(1) (string) --> Mensaje de error por nombre de pokemon ingresado incorrecto
 
 def get_pokemon_type(name):                                                     #Function - Muestra el tipo del pokemon segun su nombre
+
+    """Obtiene el tipo de un Pokémon según su nombre.
+
+    Args:
+        name (str): Nombre del Pokémon.
+
+    Returns:
+        list: Lista de tipos del Pokémon o mensaje de error.
+    """
+
     response = requests.get(f"{POKE_API}/pokemon/{name.lower()}")
     if response.status_code == 200:
         tipos = []
@@ -117,6 +180,16 @@ Posibles excepciones: get_error_message(2) (string) --> El tipo ingresado no exi
                       get_error_message(3) (string) --> No se encontraron pokemons con de ese tipo
 
 def get_random_pokemon_by_type(pokemon_type_wanted):                            #Function - Devuelve el nombre de un pokemon random segun su tipo
+
+    """Devuelve un Pokémon aleatorio según su tipo.
+
+    Args:
+        pokemon_type_wanted (str): Tipo deseado del Pokémon.
+
+    Returns:
+        str: Nombre del Pokémon aleatorio o mensaje de error.
+    """
+
     response = requests.get(f"{POKE_API}/pokemon?limit=50")  
     if response.status_code == 200:
 
@@ -144,6 +217,16 @@ Posibles excepciones: get_error_message(2) (string) --> El tipo ingresado no exi
                       get_error_message(3) (string) --> No se encontraron pokemons con de ese tipo
 
 def get_longest_name_pokemon_by_type(pokemon_type_wanted):                      #Function - Devuelve el nombre mas largo que encuentre de la lista de pokemon segun su tipo
+
+    """Obtiene el nombre más largo de un Pokémon según su tipo.
+
+    Args:
+        pokemon_type_wanted (str): Tipo deseado del Pokémon.
+
+    Returns:
+        str: Nombre del Pokémon más largo o mensaje de error.
+    """
+
     response = requests.get(f"{POKE_API}/pokemon?limit=50")  
     if response.status_code == 200:
 
@@ -168,7 +251,19 @@ Valores de resultado: filtered_pokemons (string) --> Nombre del pokemon
 Posibles excepciones: get_error_message(7) (string) --> No se encontraron pokemons en la lista
                       get_error_message(8) (string) --> Hubo un problema en el procesamiento de la ciudad ingresada
 
-def get_random_pokemon_with_letters_by_city(city):                              #Function - Devuelve el nombre de pokemon random que contenga IAM en el nombre y sea del tipo mas fuerte en base al clima de la ciudad indicada
+def get_random_pokemon_with_letters_by_city(city):                              #Function - Devuelve el nombre de pokemon random que contenga IAM en el nombre y sea del tipo mas 
+
+    """Obtiene un Pokémon aleatorio que contenga 'iam' en su nombre
+    según la ciudad y la temperatura.
+
+    Args:
+        city (str): Ciudad para determinar el clima.
+
+    Returns:
+        str: Nombre del Pokémon aleatorio o mensaje de error.
+    """
+
+fuerte en base al clima de la ciudad indicada
     city_temp = get_temperature_by_city(city)                                           #Devuelve la temperatura de la ciudad indicada                                           
     if city_temp == None:
         return get_error_message(9)                                             #Error [9] - La ciudad ingresada no puede ser encontrada en la base de datos
@@ -207,6 +302,16 @@ Valores de resultado: json()['id']   (string) --> ID del pokemon
 Posibles excepciones: get_error_message(1) (string) --> El pokemon ingresado no existe en la base de datos
                       
 def get_pokemon_id_by_name(name):                                               #Function - Devuelve el id del pokemon a partir de su nombre
+
+    """Obtiene el ID de un Pokémon según su nombre.
+
+    Args:
+        name (str): Nombre del Pokémon.
+
+    Returns:
+        int: ID del Pokémon o mensaje de error.
+    """
+
     response = requests.get(f"{POKE_API}/pokemon/{name.lower()}")
     if response.status_code == 200:
         return response.json()['id']              
@@ -219,6 +324,16 @@ Valores de resultado: errors_descriptions[error_id]   (string) --> Descripcion d
 Posibles excepciones: variable (string) --> Error - El error no se puede visualizar correctamente
 
 def get_error_message(error_id):                                                #Function - Diccionario de errores
+
+    """Devuelve un mensaje de error según el ID proporcionado.
+
+    Args:
+        error_id (int): ID del error.
+
+    Returns:
+        str: Descripción del error.
+    """
+
     errors_descriptions = {
         1: "Error - El pokemon ingresado no existe en la base de datos",
         2: "Error - El tipo ingresado no existe en la base de datos",
@@ -242,6 +357,16 @@ Valores de resultado: temperature (string) --> Temperatura de la ciudad
 Posibles excepciones: None --> Valor vacio
 
 def get_temperature_by_city(city):                                              #Function - Devuelve la temperatura a partir de la ciudad
+
+    """Obtiene la temperatura actual de una ciudad.
+
+    Args:
+        city (str): Nombre de la ciudad.
+
+    Returns:
+        float: Temperatura actual en grados Celsius o None si ocurre un error.
+    """
+
     
     lat, long = get_coords_by_city(city)
     url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={long}&current_weather=true" # URL de la API de Open-Meteo para obtener el clima actual
@@ -264,6 +389,16 @@ Valores de resultado: latitude, longitude (string, string) --> Latitud, longitud
 Posibles excepciones: None, None --> Valor vacio    
 
 def get_coords_by_city(city):                                                   #Function - Devuelve las coordenadas de la ciudad a partir del nombre de la ciudad
+
+
+    """Obtiene las coordenadas de una ciudad.
+
+    Args:
+        city (str): Nombre de la ciudad.
+
+    Returns:
+        tuple: Latitud y longitud de la ciudad o (None, None) si ocurre un error.
+    """
 
     city = city.replace(" ","%20")
     url = f"https://nominatim.openstreetmap.org/search?q={city.lower().strip()}&format=json&limit=1"
@@ -350,3 +485,20 @@ def validate_authentication():                                                  
         return get_error_message(4) 
     else:
         return None
+
+----------------
+
+Documentación sobre Autenticación
+
+La aplicación utiliza autenticación básica (Basic Auth) para proteger los endpoints. Los detalles de autenticación (usuario y contraseña) se verifican utilizando la biblioteca werkzeug.security, que proporciona funciones para trabajar con contraseñas de forma segura.
+
+Las credenciales (usuario y contraseña) están almacenadas en un archivo credentials.json, que simula una base de datos.
+
+La contraseña se guarda en formato hasheado para mejorar la seguridad. La función check_password_hash se utiliza para verificar si la contraseña proporcionada coincide con el hash almacenado.
+
+La validación de autenticación se realiza en la función validate_authentication, que:
+
+- Recibe las credenciales del encabezado de autorización de la solicitud.
+- Verifica que las credenciales estén presentes y no sean nulas.
+- Valida la contraseña y el nombre de usuario comparando los valores hasheados almacenados en credentials.json.
+- Devuelve un mensaje de error si la autenticación falla, o None si es exitosa.
