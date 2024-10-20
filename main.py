@@ -53,4 +53,4 @@ def pokemon_pokedex(name):
 
     
 if __name__ == '__main__':
-    app.run(debug=False) #Cambiar False
+    app.run(host="0.0.0.0", port=4000, debug=True) #Cambiar False

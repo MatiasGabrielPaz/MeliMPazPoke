@@ -168,7 +168,7 @@ def get_strongest_type_by_temp(temperature):                                    
 
 
 def verify_password(hash_to_validate):                                          #Function - Verifica la password del usuario, devuelve True si esta OK, false si falla
-    with open(r"C:\Users\matyy\Desktop\Pokemon MELI\credentials.json") as file:
+    with open(r"\credentials.json") as file:
         data = json.load(file)
         if hash_to_validate is None:
             return None
@@ -176,7 +176,7 @@ def verify_password(hash_to_validate):                                          
             return check_password_hash(data['users'][0]['password_hash'], hash_to_validate)
 
 def verify_user(hash_to_validate):                                              #Function - Verifica el user del usuario, devuelve True si esta OK, false si falla
-    with open(r"C:\Users\matyy\Desktop\Pokemon MELI\credentials.json") as file:
+    with open(r"\credentials.json") as file:
         data = json.load(file)
         if hash_to_validate is None:
             return None
