@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokedex</title>
+</head>
+<body>
+
+    <object id="svgObject" data="/static/mi_imagen.svg" type="image/svg+xml"></object>
+
+    <script>
+        const baseUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/"; // Cambia esto a tu URL base
+        const imgId = "{{ img_id }}";
+        const text1 = "Nombre: " + "{{ text1 }}";
+        const text2 = "Tipo: " + "{{ text2 }}";
+
+        function updateSvg() {
+            
+            const svgObject = document.getElementById('svgObject');
+
+            // Esperar a que el SVG se cargue completamente
+            svgObject.onload = function() {
+                const svgDoc = svgObject.contentDocument;
+                
+                // Actualizar la imagen
+                const imageElement = svgDoc.querySelector('image'); 
+                if (imageElement) {
+                    const imgUrl = baseUrl + imgId + ".png"; // Cambia la extensión si es necesario
+                    imageElement.setAttribute('href', imgUrl);
+                }
+
+                // Actualizar el texto
+                const textElement1 = svgDoc.getElementById('miText1');
+                const textElement2 = svgDoc.getElementById('miText2');
+
+                if (textElement1) {
+                    textElement1.textContent = text1;
+                }
+                if (textElement2) {
+                    textElement2.textContent = text2;
+                }
+            };
+
+            // También puedes llamar a onload para el primer uso
+            if (svgObject.contentDocument) {
+                const svgDoc = svgObject.contentDocument;
+                
+                // Actualizar la imagen
+                const imageElement = svgDoc.querySelector('image');
+                if (imageElement) {
+                    const imgUrl = baseUrl + imgId + ".png"; 
+                    imageElement.setAttribute('href', imgUrl);
+                }
+
+                const textElement1 = svgDoc.getElementById('miText1');
+                const textElement2 = svgDoc.getElementById('miText2');
+
+                if (textElement1) {
+                    textElement1.textContent = text1;
+                }
+                if (textElement2) {
+                    textElement2.textContent = text2;
+                }
+            }
+        }
+        window.onload = updateSvg;
+    </script>
+</body>
+</html>
