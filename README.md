@@ -94,13 +94,11 @@ from werkzeug.security import check_password_hash
 
 POKE_API = "https://pokeapi.co/api/v2"
 
-//Esta funcion
+//Esta funcion devuelve una lista de tipos de pokemon segun el nombre del pokemon que le pases
 
 Valores de ingreso: name (string) --> Nombre del pokemon
-Valores de resultado: name (string) --> Nombre del pokemon
-                      pokemon_type (string) --> Tipos del pokemon
-                      index.html --> html que contiene el svg
-Posibles excepciones: pokemon_type --> Mensaje de error por nombre de pokemon ingresado incorrecto
+Valores de resultado: tipos (list) --> Listas de tipos del pokemon
+Posibles excepciones: get_error_message(1) (string) --> Mensaje de error por nombre de pokemon ingresado incorrecto
 
 def get_pokemon_type(name):                                                     #Function - Muestra el tipo del pokemon segun su nombre
     response = requests.get(f"{POKE_API}/pokemon/{name.lower()}")
@@ -110,6 +108,13 @@ def get_pokemon_type(name):                                                     
             tipos.append(p['type']['name'])   
         return tipos         
     return get_error_message(1)                                                 #Error [1] - El pokemon ingresado no existe en la base de datos
+
+//Esta funcion arranca a partir de un tipo ingresado de pokemon, ingresa en una lista todos los pokemon que encuentre relacionados con el tipo ingresado, selecciona un pokemon random de esa lista y lo devuelve el nombre del pokemon como valor en string de salida.
+
+Valores de ingreso: pokemon_type_wanted (string) --> Tipo del pokemon
+Valores de resultado: random_pokemon (string) --> Nombre del pokemon
+Posibles excepciones: get_error_message(2) (string) --> El tipo ingresado no existe en la base de datos
+                      get_error_message(3) (string) --> No se encontraron pokemons con de ese tipo
 
 def get_random_pokemon_by_type(pokemon_type_wanted):                            #Function - Devuelve el nombre de un pokemon random segun su tipo
     response = requests.get(f"{POKE_API}/pokemon?limit=50")  
@@ -131,6 +136,13 @@ def get_random_pokemon_by_type(pokemon_type_wanted):                            
         return random_pokemon
     return get_error_message(2)                                                 #Error [2] - El tipo ingresado no existe en la base de datos
 
+//Esta funcion arranca a partir de un tipo ingresado de pokemon, ingresa en una lista todos los pokemon que encuentre relacionados con el tipo ingresado, selecciona el pokemon de esa lista que tenga la mayor cantidad de caracteres en su nombre y lo devuelve el nombre del pokemon como valor en string de salida.
+
+Valores de ingreso: pokemon_type_wanted (string) --> Tipo del pokemon
+Valores de resultado: longest_pokemon (string) --> Nombre del pokemon
+Posibles excepciones: get_error_message(2) (string) --> El tipo ingresado no existe en la base de datos
+                      get_error_message(3) (string) --> No se encontraron pokemons con de ese tipo
+
 def get_longest_name_pokemon_by_type(pokemon_type_wanted):                      #Function - Devuelve el nombre mas largo que encuentre de la lista de pokemon segun su tipo
     response = requests.get(f"{POKE_API}/pokemon?limit=50")  
     if response.status_code == 200:
@@ -148,6 +160,13 @@ def get_longest_name_pokemon_by_type(pokemon_type_wanted):                      
             return get_error_message(3)                                         #Error [3] - No se encontraron pokemons para clasificar
         return longest_pokemon
     return get_error_message(2)                                                 #Error [2] - El tipo ingresado no existe en la base de datos
+
+//Esta funcion comienza a partir del ingreso del nombre de una ciudad, usando ese nombre, la api nominatim.openstreetmap.org nos calcula las coordenadas en latitud y longitud, con esos 2 datos la api api.open-meteo nos calcula la temperatura actual en grados centigrados, luego hacemos una comparacion entre esa temperatura y una tabla que relaciona grados y tipos de pokemon. Cuando tenemos seleccionado el tipo de Pokemon hacemos una lista con los pokemon referentes a ese tipo y luego seleccionamos uno al azar que tengo alguna de las letras IAM en su nombre. Devolvemos el nombre del pokemon como string
+
+Valores de ingreso: city (string) --> Nombre de la ciudad
+Valores de resultado: filtered_pokemons (string) --> Nombre del pokemon
+Posibles excepciones: get_error_message(7) (string) --> No se encontraron pokemons en la lista
+                      get_error_message(8) (string) --> Hubo un problema en el procesamiento de la ciudad ingresada
 
 def get_random_pokemon_with_letters_by_city(city):                              #Function - Devuelve el nombre de pokemon random que contenga IAM en el nombre y sea del tipo mas fuerte en base al clima de la ciudad indicada
     city_temp = get_temperature_by_city(city)                                           #Devuelve la temperatura de la ciudad indicada                                           
@@ -179,15 +198,25 @@ def get_random_pokemon_with_letters_by_city(city):                              
             return random.choice(filtered_pokemons)
         else:
             return get_error_message(7)                                         #Error [7] - No se encontraron pokemons en la lista
-    return get_error_message(3)                                                 #Error [8] - Hubo un problema en el procesamiento de la ciudad ingresada
+    return get_error_message(8)                                                 #Error [8] - Hubo un problema en el procesamiento de la ciudad ingresada
 
+//Esta funcion comienza a partir del nombre de un pokemon ingresado y nos devuelve el id.
 
+Valores de ingreso: name (string) --> Nombre del pokemon
+Valores de resultado: json()['id']   (string) --> ID del pokemon
+Posibles excepciones: get_error_message(1) (string) --> El pokemon ingresado no existe en la base de datos
+                      
 def get_pokemon_id_by_name(name):                                               #Function - Devuelve el id del pokemon a partir de su nombre
     response = requests.get(f"{POKE_API}/pokemon/{name.lower()}")
     if response.status_code == 200:
         return response.json()['id']              
     return get_error_message(1)                                                 #Error [1] - Error 500 - El pokemon ingresado no existe en la base de datos
 
+//Esta funcion aloja los distintos errores que podemos tener en el sistema. Comienza a partir del ID del error que necesitamos buscar y devuelve la descripcion de ese error.
+
+Valores de ingreso: error_id (int) --> ID del error
+Valores de resultado: errors_descriptions[error_id]   (string) --> Descripcion del error
+Posibles excepciones: variable (string) --> Error - El error no se puede visualizar correctamente
 
 def get_error_message(error_id):                                                #Function - Diccionario de errores
     errors_descriptions = {
@@ -206,7 +235,11 @@ def get_error_message(error_id):                                                
         return errors_descriptions[error_id]
     return "Error - El error no se puede visualizar correctamente"
 
+//Esta funcion toma como valor de ingreso el nombre de una ciudad, calcula sus coordenadas utilizando la api nominatim.openstreetmap.org y luego utilizando la api api.open-meteo devuelve la temperatura actual de esa ciudad en grados centigrados
 
+Valores de ingreso: city (string) --> Nombre de la ciudad
+Valores de resultado: temperature (string) --> Temperatura de la ciudad
+Posibles excepciones: None --> Valor vacio
 
 def get_temperature_by_city(city):                                              #Function - Devuelve la temperatura a partir de la ciudad
     
@@ -224,7 +257,11 @@ def get_temperature_by_city(city):                                              
     except:
         return None
 
-    
+//Esta funcion toma como valor de ingreso el nombre de una ciudad, y utilizando la api nominatim.openstreetmap.org devuelve la latitud y longitud de esa ciudad.
+
+Valores de ingreso: city (string) --> Nombre de la ciudad
+Valores de resultado: latitude, longitude (string, string) --> Latitud, longitud
+Posibles excepciones: None, None --> Valor vacio    
 
 def get_coords_by_city(city):                                                   #Function - Devuelve las coordenadas de la ciudad a partir del nombre de la ciudad
 
@@ -242,6 +279,16 @@ def get_coords_by_city(city):                                                   
     else:
         return None, None
 
+//Esta funcion toma como valor de ingreso un valor referente a la temperatura y en base a ese valor devuelve el tipo de pokemon mas fuerte
+
+Valores de ingreso: temperature (int) --> Temperatura de la ciudad
+Valores de resultado: "fire" (string) --> Tipo de pokemon
+                      "ground" (string) --> Tipo de pokemon
+                      "normal" (string) --> Tipo de pokemon
+                      "water" (string) --> Tipo de pokemon
+                      "ice" (string) --> Tipo de pokemon
+Posibles excepciones: - 
+
 def get_strongest_type_by_temp(temperature):                                    #Function - Devuelve el tipo mas fuerte en base a la temperatura
     if temperature >= 30:
         return "fire"
@@ -254,6 +301,12 @@ def get_strongest_type_by_temp(temperature):                                    
     else:
         return "ice"
 
+//Esta funcion toma como valor de ingreso un valor hash de password para validar y devuelve True o False dependiendo si la password es valida o no
+
+Valores de ingreso: hash_to_validate (string) --> hash de la password
+Valores de resultado: True
+                      False
+Posibles excepciones: None
 
 def verify_password(hash_to_validate):                                          #Function - Verifica la password del usuario, devuelve True si esta OK, false si falla
     with open(r"C:\Users\matyy\Desktop\Pokemon MELI\credentials.json") as file:
@@ -263,6 +316,13 @@ def verify_password(hash_to_validate):                                          
         else:
             return check_password_hash(data['users'][0]['password_hash'], hash_to_validate)
 
+//Esta funcion toma como valor de ingreso un valor hash de usuario para validar y devuelve True o False dependiendo si la password es valida o no
+
+Valores de ingreso: hash_to_validate (string) --> hash de usuario
+Valores de resultado: True
+                      False
+Posibles excepciones: None
+
 def verify_user(hash_to_validate):                                              #Function - Verifica el user del usuario, devuelve True si esta OK, false si falla
     with open(r"C:\Users\matyy\Desktop\Pokemon MELI\credentials.json") as file:
         data = json.load(file)
@@ -271,6 +331,13 @@ def verify_user(hash_to_validate):                                              
         else:
             return check_password_hash(data['users'][0]['username'], hash_to_validate)
         
+//Esta funcion se encarga de validar el usuario y password
+
+Valores de ingreso: -
+Valores de resultado: None
+Posibles excepciones: get_error_message(4) --> Error - Autenticacion no valida
+                      get_error_message(5) --> Error - Por favor, ingrese la contrasenia para acceder
+                      get_error_message(6) --> Error - Por favor, ingrese el usuario para acceder
 
 def validate_authentication():                                                  #Function - valida el usuario y password.
    
