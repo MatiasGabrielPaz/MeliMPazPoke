@@ -1,6 +1,6 @@
-import requests                                     #Que pasa si hay mas de 1 type? Chequear ......get_pokemon_type. RESUELTO
-import random                                       #Si hay 2 pokemons con la misma cantidad de letras trae el primero que encuentre.......get_longest_name_pokemon_by_type
-from utils import *
+import requests                                     
+import random                                       
+from utils import *                                 #Revisar el archivo README.md por mas documentacion
 import json
 from flask import Flask, jsonify, request, render_template
 from utils import *
@@ -66,7 +66,7 @@ def get_random_pokemon_with_letters_by_city(city):                              
     if city_temp == None:
         return get_error_message(9)                                             #Error [9] - La ciudad ingresada no puede ser encontrada en la base de datos
     pokemon_type_required = get_strongest_type_by_temp(city_temp)                       #Devuelve el tipo de pokemon mas fuerte segun la temperatura de la ciudad
-    response = requests.get(f"{POKE_API}/pokemon?limit=50")
+    response = requests.get(f"{POKE_API}/pokemon?limit=100")
     if response.status_code == 200:
         results = response.json()['results']                                            #Traemos la lista entera de pokemons
         
@@ -91,7 +91,7 @@ def get_random_pokemon_with_letters_by_city(city):                              
             return random.choice(filtered_pokemons)
         else:
             return get_error_message(7)                                         #Error [7] - No se encontraron pokemons en la lista
-    return get_error_message(3)                                                 #Error [8] - Hubo un problema en el procesamiento de la ciudad ingresada
+    return get_error_message(8)                                                 #Error [8] - Hubo un problema en el procesamiento de la ciudad ingresada
 
 
 def get_pokemon_id_by_name(name):                                               #Function - Devuelve el id del pokemon a partir de su nombre
@@ -130,7 +130,7 @@ def get_temperature_by_city(city):                                              
             data = response.read()
             weather_data = json.loads(data)
 
-        temperature = weather_data['current_weather']['temperature']                # Extraemos la temperatura actual
+        temperature = weather_data['current_weather']['temperature']                    # Extraemos la temperatura actual
         
         return temperature
     except:
@@ -188,10 +188,10 @@ def validate_authentication():                                                  
    
     auth = request.authorization
     if auth is None or 'password' not in auth or not auth['password']:          
-        return get_error_message(5) 
+        return get_error_message(5)                                                     #Error [5] - Error - Por favor, ingrese la contrasenia para acceder
     if auth is None or 'username' not in auth or not auth['username']:
-        return get_error_message(6) 
+        return get_error_message(6)                                                     #Error [6] - Error - Por favor, ingrese el usuario para acceder
     if not verify_password(auth.password) or not verify_user(auth.username):
-        return get_error_message(4) 
-    else:
+        return get_error_message(4)                                                     #Error [4] - Error - Autenticacion no valida
+    else:   
         return None
